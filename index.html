@@ -26,20 +26,20 @@
   .prompt{color:#9bffcf;margin-right:6px}
   .blink{display:inline-block;width:10px;height:18px;background:var(--accent);animation:blink 1s steps(1) infinite;margin-left:6px;vertical-align:middle}
   @keyframes blink{50%{opacity:0}}
-  .side{padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:12px;}
+  .side{padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;border:1px solid rgba(255,255,255,0.03);height:60vh;display:flex;flex-direction:column;gap:12px;}
   .card{background:var(--glass);padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.25)}
   .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(0,255,156,0.12);color:var(--accent);cursor:pointer;font-size:0.95rem;text-decoration:none}
   .small{font-size:0.85rem;color:var(--muted)}
   footer{position:fixed;left:0;right:0;bottom:12px;text-align:center;color:rgba(255,255,255,0.12);font-size:12px;z-index:2}
-  @media (max-width:980px){.wrap{grid-template-columns:1fr;padding:18px}}
+  @media (max-width:980px){.wrap{grid-template-columns:1fr;padding:18px}.side{height:auto}}
   .glitch{position:relative;display:inline-block;color:var(--accent);font-weight:700;}
   .glitch::before,.glitch::after{content:attr(data-text);position:absolute;left:0;top:0;opacity:0.6;}
   .glitch::before{color:#00ffd0;transform:translate(-2px,-1px);mix-blend-mode:screen;opacity:0.5;filter:blur(0.4px)}
   .glitch::after{color:#0ff;transform:translate(2px,1px);opacity:0.4}
-  /* Hakkımda CV stili */
-  #aboutContent{display:none; background:var(--panel); border-radius:12px; padding:16px; margin-top:12px; max-height:400px; overflow:auto;}
-  #aboutContent h2,h3{margin:6px 0 4px}
-  #aboutContent ul{margin:4px 0 8px 18px}
+  /* dropdown CV styles */
+  .cv-container{margin-top:10px;background:#0b0d10;padding:10px;border-radius:8px;max-height:0;overflow:hidden;transition:max-height 0.5s ease;}
+  .cv-container.open{max-height:2000px;}
+  .cv-section{border-bottom:1px solid rgba(0,255,156,0.12);padding:6px 0;}
 </style>
 </head>
 <body>
@@ -58,30 +58,31 @@
     <div class="terminal" id="terminal" aria-live="polite">
       <div class="line"><span class="prompt">user@eren ~</span> <span id="typed"></span><span class="blink" id="cursor"></span></div>
       <div id="output"></div>
-      <div id="aboutContent">
-        <h2>Ben Eren Tarhan</h2>
-        <p>Siber güvenlik araştırmacısı, pentester ve Python geliştirici.</p>
-        <h3>Eğitim</h3>
-        <ul>
-          <li>Bilgi Güvenliği Sertifikası - BTK Akademi</li>
-          <li>Python: Sıfırdan İleri Seviyeye</li>
-          <li>Etik Hacker Olma Kursları</li>
-        </ul>
-        <h3>Deneyim</h3>
-        <ul>
-          <li>Penetrasyon testleri ve sızma testleri (izinli)</li>
-          <li>Araç incelemeleri ve siber güvenlik blog yazıları</li>
-        </ul>
-        <h3>İletişim</h3>
-        <p>Email: eren@example.com</p>
-        <p>LinkedIn: <a href="https://www.linkedin.com/in/eren-tarhan-6377b9306/" target="_blank" style="color:#00ff9c">Profil</a></p>
-        <p>GitHub: <a href="https://github.com/erentarhan1818" target="_blank" style="color:#00ff9c">erentarhan1818</a></p>
+      <div class="cv-container" id="cvContainer">
+        <div class="cv-section"><strong>Contact:</strong><br>05013377806<br>eren18tarhan@gmail.com<br>Çerkeş/Çankırı</div>
+        <div class="cv-section"><strong>Professional Experience:</strong><br>
+          Kale İleri Teknoloji, Cyber Security Analyst (05/2025 – 07/2025, Ankara)<br>
+          Nesil Teknoloji, Penetration Tester (2023 – 2024, Ankara)<br>
+          Mayadem Teknoloji A.Ş, Intern (01/2023 – 02/2023, İstanbul)
+        </div>
+        <div class="cv-section"><strong>Education:</strong><br>
+          Ankara Yıldırım Beyazıt University, Computer Programming (09/2023 – 06/2024)<br>
+          Kastamonu University, Computer Programming (2022 – 2023)
+        </div>
+        <div class="cv-section"><strong>Skills:</strong> C#, ASP.NET, WireShark, Linux, SSMSQL, Python</div>
+        <div class="cv-section"><strong>Certificates:</strong> TSE, TryHackMe, Cisco, Udemy, BTK Academy, Fortinet</div>
+        <div class="cv-section"><strong>Projects:</strong> OtoServisSatış, TravelTrip, WindigRoads, English Dictionary App, SesimOl, Movie Website, Yummy</div>
+        <div class="cv-section"><strong>Penetration Tests:</strong> Internal & External Networks, Web App Security, DDoS, Social Engineering, Wireless Networks</div>
+        <div class="cv-section"><strong>Interests:</strong> Volleyball, Bodybuilding, Arm Wrestling, E-athlete Zula, Military Service</div>
+        <div class="cv-section"><strong>References:</strong> Uğur Tılıkoğlu, Önder Doğdu</div>
+        <div class="cv-section"><strong>Languages:</strong> English, Türkçe</div>
+        <div class="cv-section"><strong>Organizations:</strong> Akbank Youth Academy Cyber Security Analyst Training (01/2025 – 05/2025)</div>
       </div>
     </div>
 
     <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn" onclick="runFakeScan()">Run quick-scan</button>
-      <button class="btn" onclick="showAboutPage()">Hakkımda / CV</button>
+      <button class="btn" onclick="toggleCV()">Hakkımda / CV</button>
       <span style="flex:1"></span>
       <span class="small">Theme: <strong>Neon Terminal</strong></span>
     </div>
@@ -89,11 +90,24 @@
 
   <aside class="side">
     <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="small">Public profile</div>
+          <div style="font-weight:700">erentarhan1818</div>
+        </div>
+        <div style="text-align:right">
+          <div class="small">Status</div>
+          <div style="color:#00ff9c;font-weight:700">ONLINE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="small">Quick links</div>
       <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
         <a class="btn" href="https://github.com/erentarhan1818" target="_blank" rel="noreferrer">GitHub</a>
         <a class="btn" href="https://www.linkedin.com/in/eren-tarhan-6377b9306/" target="_blank" rel="noreferrer">LinkedIn</a>
-        <a class="btn" href="#" onclick="showAboutPage()">Hakkımda</a>
+        <a class="btn" href="#" onclick="toggleCV()">Hakkımda / CV</a>
       </div>
     </div>
 
@@ -116,7 +130,12 @@ let cols = Math.floor(W / 14) + 1;
 let drops = Array(cols).fill(1);
 let matrixOn = true;
 
-function resetCanvas(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; cols = Math.floor(W / 14) + 1; drops = Array(cols).fill(1);}
+function resetCanvas(){
+  W = canvas.width = innerWidth;
+  H = canvas.height = innerHeight;
+  cols = Math.floor(W / 14) + 1;
+  drops = Array(cols).fill(1);
+}
 window.addEventListener('resize', resetCanvas);
 
 function drawMatrix(){
@@ -138,12 +157,14 @@ drawMatrix();
 /* ===== Terminal typing effect ===== */
 const typedEl = document.getElementById('typed');
 const outputEl = document.getElementById('output');
-const aboutEl = document.getElementById('aboutContent');
 const cursor = document.getElementById('cursor');
 
 const lines = [
   'whoami',
   'echo "EREN TARHAN - Security Researcher"',
+  'ps aux | grep scan',
+  'nmap -sV --top-ports 100 192.168.1.0/24',
+  'cat notes/roadmap.md',
   'git pull origin main',
   'deploy --target production',
 ];
@@ -179,7 +200,6 @@ function appendOutput(text){
   outputEl.scrollTop = outputEl.scrollHeight;
 }
 
-/* auto-run small sequence */
 setTimeout(()=> {
   typeLine('booting interface...', ()=>{
     appendOutput('🔒 Secure terminal initialized.');
@@ -199,6 +219,7 @@ function runSequence(){
   });
 }
 
+/* button actions */
 function runFakeScan(){
   if(typing) return;
   appendOutput('> quick-scan initiated...');
@@ -213,22 +234,32 @@ function runFakeScan(){
   }, 400);
 }
 
-function showAboutPage(){
-  outputEl.style.display = 'none';
-  aboutEl.style.display = 'block';
+function toggleCV(){
+  const cv = document.getElementById('cvContainer');
+  cv.classList.toggle('open');
 }
 
 function generateFakeOutput(cmd){
   cmd = cmd.toLowerCase();
   if(cmd.includes('whoami')) return 'user: erentarhan';
   if(cmd.includes('echo')) return 'EREN TARHAN - Security Researcher';
+  if(cmd.includes('ps')) return 'scan (running)  pid: 4382   mem: 2.3%';
   if(cmd.includes('git pull')) return 'Already up to date.';
   if(cmd.includes('deploy')) return 'deploy: success -> https://erentarhan.github.io';
   return 'command executed (visual only)';
 }
 
+/* uptime ticker */
 let seconds = 12;
-setInterval(()=> {seconds++;}, 1000);
+setInterval(()=> {
+  seconds++;
+  const el = document.getElementById('uptime');
+  if(el) el.textContent = new Date(seconds*1000).toISOString().substr(11,8);
+}, 1000);
+
+/* accessibility: stop animation on reduced-motion preference */
+const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+if(mq.matches){ matrixOn = false; }
 </script>
 </body>
 </html>
