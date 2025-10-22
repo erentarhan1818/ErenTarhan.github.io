@@ -1,64 +1,343 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eren'in Blogu</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #222;
-      color: white;
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-    main {
-      max-width: 800px;
-      margin: 20px auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    h1, h2 {
-      color: #333;
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      color: #777;
-    }
-    a {
-      color: #007bff;
-      text-decoration: none;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Eren — Dark Terminal</title>
+<style>
+  :root{
+    --bg:#06060a;
+    --panel:#0b0d10;
+    --accent:#00ff9c;
+    --muted:#7a7d85;
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;color:var(--accent);background:var(--bg);-webkit-font-smoothing:antialiased}
+  /* full-screen canvas */
+  #matrix{
+    position:fixed;left:0;top:0;width:100%;height:100%;z-index:0;mix-blend-mode:screen;opacity:0.75;
+    background:linear-gradient(180deg, rgba(0,0,0,0.25), transparent 40%);
+  }
+
+  .wrap{
+    position:relative;z-index:2;max-width:1100px;margin:48px auto;padding:28px;
+    display:grid;grid-template-columns: 1fr 420px;gap:20px;
+  }
+
+  /* left main panel */
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    padding:20px;border-radius:12px;backdrop-filter: blur(6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    min-height:60vh;
+  }
+
+  .brand{
+    display:flex;align-items:center;gap:12px;margin-bottom:18px;
+  }
+  .logo{
+    width:60px;height:60px;border-radius:10px;background:linear-gradient(135deg,#001f13,#003826);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#001;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.6), inset 0 -6px 20px rgba(0,0,0,0.4);
+  }
+  h1{margin:0;font-size:1.4rem;letter-spacing:1px}
+  p.lead{margin:6px 0 0;color:var(--muted);font-size:0.95rem}
+
+  /* terminal */
+  .terminal{
+    margin-top:18px;background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.01));
+    border-radius:8px;padding:18px;border:1px solid rgba(255,255,255,0.02);min-height:240px;
+    color:var(--accent);font-size:14px;line-height:1.6;overflow:auto;
+  }
+  .line{white-space:pre-wrap;font-family:inherit}
+  .prompt{color:#9bffcf;margin-right:6px}
+  .blink{display:inline-block;width:10px;height:18px;background:var(--accent);animation:blink 1s steps(1) infinite;margin-left:6px;vertical-align:middle}
+  @keyframes blink{50%{opacity:0}}
+
+  /* right side */
+  .side{
+    padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+    height:60vh;display:flex;flex-direction:column;gap:12px;
+  }
+  .card{background:var(--glass);padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.25)}
+  .stat{display:flex;justify-content:space-between;align-items:center}
+  .btn{
+    display:inline-block;padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(0,255,156,0.12);
+    color:var(--accent);cursor:pointer;font-size:0.95rem;text-decoration:none
+  }
+  .controls{display:flex;gap:10px;flex-wrap:wrap}
+  .small{font-size:0.85rem;color:var(--muted)}
+
+  footer{position:fixed;left:0;right:0;bottom:12px;text-align:center;color:rgba(255,255,255,0.12);font-size:12px;z-index:2}
+
+  /* responsive */
+  @media (max-width:980px){
+    .wrap{grid-template-columns:1fr;padding:18px}
+    .side{height:auto}
+  }
+
+  /* subtle neon header glitch */
+  .glitch{
+    position:relative;display:inline-block;color:var(--accent);font-weight:700;
+  }
+  .glitch::before,.glitch::after{
+    content:attr(data-text);position:absolute;left:0;top:0;opacity:0.6;
+  }
+  .glitch::before{color:#00ffd0;transform:translate(-2px,-1px);mix-blend-mode:screen;opacity:0.5;filter:blur(0.4px)}
+  .glitch::after{color:#0ff;transform:translate(2px,1px);opacity:0.4}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Eren'in Siber Güvenlik Blogu</h1>
-    <p>Siber dünyaya dair bilgiler, analizler ve notlar</p>
-  </header>
+<canvas id="matrix"></canvas>
 
-  <main>
-    <h2>👋 Hoş Geldin!</h2>
-    <p>Bu benim kişisel blog sitem. Burada siber güvenlik, etik hacking, araç incelemeleri ve öğrenme notlarımı paylaşacağım.</p>
-    
-    <h2>🧠 Son Yazılar</h2>
-    <ul>
-      <li><a href="#">Nmap ile Ağ Keşfi</a></li>
-      <li><a href="#">SQL Injection Nedir?</a></li>
-      <li><a href="#">Maltego ile OSINT Çalışması</a></li>
-    </ul>
-  </main>
+<div class="wrap">
+  <div class="panel">
+    <div class="brand">
+      <div class="logo">ET</div>
+      <div>
+        <h1><span class="glitch" data-text="EREN TARHAN">EREN TARHAN</span></h1>
+        <p class="lead">Siber güvenlik notları • araç incelemeleri • öğrenme günlüğü</p>
+      </div>
+    </div>
 
-  <footer>
-    <p>© 2025 Eren Tarhan | <a href="https://github.com/eren123">GitHub Profilim</a></p>
-  </footer>
+    <div class="terminal" id="terminal" aria-live="polite">
+      <div class="line"><span class="prompt">user@eren ~</span> <span id="typed"></span><span class="blink" id="cursor"></span></div>
+      <div id="output"></div>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="runFakeScan()">Run quick-scan</button>
+      <button class="btn" onclick="downloadShot()">Save snapshot</button>
+      <button class="btn" onclick="toggleMatrix()">Toggle Matrix</button>
+      <span style="flex:1"></span>
+      <span class="small">Theme: <strong>Neon Terminal</strong></span>
+    </div>
+  </div>
+
+  <aside class="side">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="small">Public profile</div>
+          <div style="font-weight:700">erentarhan1818</div>
+        </div>
+        <div style="text-align:right">
+          <div class="small">Status</div>
+          <div style="color:#00ff9c;font-weight:700">ONLINE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="small">Quick links</div>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+        <a class="btn" href="https://github.com/erentarhan1818" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="btn" href="#" onclick="fakeCTF()" title="Çalıştır">CTF Sim</a>
+        <a class="btn" href="#" onclick="showAbout()">Hakkımda</a>
+      </div>
+    </div>
+
+    <div class="card" id="stats">
+      <div class="small">System</div>
+      <div style="margin-top:8px" class="stat"><div>Uptime</div><div id="uptime">00:00:12</div></div>
+      <div class="stat"><div>CPU</div><div id="cpu">3%</div></div>
+      <div class="stat"><div>Memory</div><div id="mem">28%</div></div>
+    </div>
+
+    <div class="card">
+      <div class="small">About</div>
+      <div style="margin-top:8px;color:var(--muted)">Bu sayfa sadece görsel amaçlı "hacker" temalı bir portfolyo/landing sayfasıdır. Gerçek saldırı/dokümantasyon içermez.</div>
+    </div>
+  </aside>
+</div>
+
+<footer>Press <strong>Run quick-scan</strong> to see terminal animation • Save and deploy to GitHub Pages</footer>
+
+<script>
+/* ===== Matrix rain ===== */
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+let W = canvas.width = innerWidth;
+let H = canvas.height = innerHeight;
+let cols = Math.floor(W / 14) + 1;
+let drops = Array(cols).fill(1);
+let matrixOn = true;
+
+function resetCanvas(){
+  W = canvas.width = innerWidth;
+  H = canvas.height = innerHeight;
+  cols = Math.floor(W / 14) + 1;
+  drops = Array(cols).fill(1);
+}
+window.addEventListener('resize', resetCanvas);
+
+function drawMatrix(){
+  if(!matrixOn){ ctx.clearRect(0,0,W,H); return; }
+  ctx.fillStyle = 'rgba(0,0,0,0.12)';
+  ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#00ff9c';
+  ctx.font = '14px monospace';
+  for(let i=0;i<drops.length;i++){
+    const text = String.fromCharCode(33 + Math.random()*94);
+    ctx.fillText(text, i*14, drops[i]*14);
+    if(drops[i]*14 > H && Math.random() > 0.975) drops[i]=0;
+    drops[i]++;
+  }
+  requestAnimationFrame(drawMatrix);
+}
+drawMatrix();
+
+/* ===== Terminal typing effect ===== */
+const typedEl = document.getElementById('typed');
+const outputEl = document.getElementById('output');
+const cursor = document.getElementById('cursor');
+
+const lines = [
+  'whoami',
+  'echo "EREN TARHAN - Security Researcher"',
+  'ps aux | grep scan',
+  'nmap -sV --top-ports 100 192.168.1.0/24',
+  'cat notes/roadmap.md',
+  'git pull origin main',
+  'deploy --target production',
+];
+
+let idx = 0;
+let char = 0;
+let typing = false;
+
+function typeLine(line, cb){
+  typing = true;
+  typedEl.textContent = '';
+  char = 0;
+  const t = setInterval(()=>{
+    typedEl.textContent += line[char]||'';
+    char++;
+    if(char >= line.length){
+      clearInterval(t);
+      // simulate command enter
+      setTimeout(()=>{
+        appendOutput('$ ' + line);
+        typedEl.textContent = '';
+        typing = false;
+        if(cb) cb();
+      }, 400);
+    }
+  }, 40);
+}
+
+function appendOutput(text){
+  const d = document.createElement('div');
+  d.className='line';
+  d.textContent = text;
+  outputEl.appendChild(d);
+  outputEl.scrollTop = outputEl.scrollHeight;
+}
+
+/* auto-run small sequence on load */
+setTimeout(()=> {
+  typeLine('booting interface...', ()=>{
+    appendOutput('🔒 Secure terminal initialized.');
+    setTimeout(()=> runSequence(), 800);
+  });
+}, 600);
+
+function runSequence(){
+  if(idx >= lines.length) { idx = 0; return; }
+  typeLine(lines[idx], ()=>{
+    // fake command outputs
+    setTimeout(()=>{
+      const out = generateFakeOutput(lines[idx]);
+      appendOutput(out);
+      idx++;
+      setTimeout(runSequence, 700);
+    }, 400);
+  });
+}
+
+/* button actions */
+function runFakeScan(){
+  if(typing) return;
+  appendOutput('> quick-scan initiated...');
+  let progress = 0;
+  const id = setInterval(()=>{
+    progress += Math.floor(Math.random()*12)+6;
+    appendOutput('scan: ' + Math.min(progress,100) + '%');
+    if(progress >= 100){
+      clearInterval(id);
+      appendOutput('scan complete — 0 critical findings (visual-only)');
+      // update stats briefly
+      simulateStatsBurst();
+    }
+  }, 400);
+}
+
+function fakeCTF(){
+  appendOutput('ctf-sim: challenge spawned -> FLAG{demo_flag_2025}');
+}
+function showAbout(){
+  appendOutput('about: Eren Tarhan — learning & sharing.');
+}
+function downloadShot(){
+  try{
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'shot.png';
+    link.click();
+    appendOutput('snapshot saved locally.');
+  }catch(e){
+    appendOutput('snapshot failed: ' + e.message);
+  }
+}
+function toggleMatrix(){
+  matrixOn = !matrixOn;
+  appendOutput('matrix ' + (matrixOn ? 'activated' : 'paused'));
+}
+
+/* fake system stats */
+function simulateStatsBurst(){
+  const cpu = document.getElementById('cpu');
+  const mem = document.getElementById('mem');
+  const uptime = document.getElementById('uptime');
+  let t = 0;
+  const i = setInterval(()=>{
+    t += 1;
+    uptime.textContent = new Date(t*1000).toISOString().substr(11,8);
+    cpu.textContent = (3 + Math.floor(Math.random()*18)) + '%';
+    mem.textContent = (20 + Math.floor(Math.random()*60)) + '%';
+    if(t > 6) clearInterval(i);
+  }, 800);
+}
+
+/* helper to generate fake outputs */
+function generateFakeOutput(cmd){
+  cmd = cmd.toLowerCase();
+  if(cmd.includes('whoami')) return 'user: erentarhan';
+  if(cmd.includes('echo')) return 'EREN TARHAN - Security Researcher';
+  if(cmd.includes('nmap')) return 'open: 22/tcp ssh\nopen: 80/tcp http\nopen: 443/tcp https';
+  if(cmd.includes('ps')) return 'scan (running)  pid: 4382   mem: 2.3%';
+  if(cmd.includes('cat')) return 'notes/roadmap.md: \n - learn rust\n - automate tests\n - blog weekly';
+  if(cmd.includes('git pull')) return 'Already up to date.';
+  if(cmd.includes('deploy')) return 'deploy: success -> https://erentarhan.github.io';
+  return 'command executed (visual only)';
+}
+
+/* uptime ticker */
+let seconds = 12;
+setInterval(()=> {
+  seconds++;
+  const el = document.getElementById('uptime');
+  el.textContent = new Date(seconds*1000).toISOString().substr(11,8);
+}, 1000);
+
+/* small accessibility: stop animation on reduced-motion preference */
+const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+if(mq.matches){ matrixOn = false; }
+
+/* end */
+</script>
 </body>
 </html>
